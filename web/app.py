@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
 
-# Подключение к RabbitMQ
+# Connection to RabbitMQ
 def connect_to_rabbitmq():
     credentials = pika.PlainCredentials('guest', 'guest')
     parameters = pika.ConnectionParameters('rabbitmq', 5672, '/', credentials)
@@ -22,7 +22,7 @@ def connect_to_rabbitmq():
             logger.error("He удалось подключиться к RabbitMQ, ожидание... Причина: %s", e)
             time.sleep(10)
 
-# Создание соединения и канал в глобальной области видимости
+# Create a connection and channel in the global scope
 connection = connect_to_rabbitmq()
 channel = connection.channel()
 
@@ -36,7 +36,7 @@ def submit_order():
     quantity = request.form['quantity']
     order = {'item_id': item_id, 'quantity': quantity}
 
-    # Логика отправки сообщения в очередь q_order
+    # Logic for sending a message to the q_order queue
     try:
         channel.exchange_declare(exchange='x_order', exchange_type='direct', durable=True)
         channel.basic_publish(exchange='x_order', routing_key='order', body=json.dumps(order))
@@ -53,7 +53,7 @@ def update_inventory():
     quantity = request.form['quantity']
     update = {'item_id': item_id, 'quantity': quantity}
 
-    # Логика отправки сообщения в очередь q_inventory
+    # Logic for sending a message to the q_inventory queue
     try:
         channel.basic_publish(exchange='x_inventory', routing_key='inventory.update', body=json.dumps(update))
         logger.info("Сообщение ob обновлении инвентаря отправлено в RabbitMQ: %s", update)
@@ -69,7 +69,7 @@ def update_catalog():
     description = request.form.get('description', '')
     update = {'item_id': item_id, 'name': name, 'description': description}
 
-    # Логика отправки сообщения в очередь q_catalog
+    # Logic for sending a message to the q_catalog queue
     try:
         channel.basic_publish(exchange='x_catalog', routing_key='', body=json.dumps(update))
         logger.info("Сообщение ob обновлении каталога отправлено в RabbitMQ: %s", update)
