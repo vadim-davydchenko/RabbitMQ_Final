@@ -1,0 +1,101 @@
+{
+    "rabbit_version": "3.12.8",
+    "users": [
+      {
+        "name": "guest",
+        "password_hash": "XU0A2CRYoyYvK8Aau+avu9HICl+2y0qBxHVcnU33QG69RdnQ",
+        "hashing_algorithm": "rabbit_password_hashing_sha256",
+        "tags": "administrator"
+      }
+    ],
+    "vhosts": [
+      {
+        "name": "/"
+      }
+    ],
+    "permissions": [
+      {
+        "user": "guest",
+        "vhost": "/",
+        "configure": ".*",
+        "write": ".*",
+        "read": ".*"
+      }
+    ],
+    "queues": [
+      {
+        "name": "q_order",
+        "vhost": "/",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "q_inventory",
+        "vhost": "/",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      },
+      {
+        "name": "q_catalog",
+        "vhost": "/",
+        "durable": true,
+        "auto_delete": false,
+        "arguments": {}
+      }
+    ],
+    "exchanges": [
+      {
+        "name": "x_order",
+        "vhost": "/",
+        "type": "direct",
+        "durable": true,
+        "auto_delete": false,
+        "internal": false,
+        "arguments": {}
+      },
+      {
+        "name": "x_inventory",
+        "vhost": "/",
+        "type": "topic",
+        "durable": true,
+        "auto_delete": false,
+        "internal": false,
+        "arguments": {}
+      },
+      {
+        "name": "x_catalog",
+        "vhost": "/",
+        "type": "fanout",
+        "durable": true,
+        "auto_delete": false,
+        "internal": false,
+        "arguments": {}
+      }
+    ],
+    "bindings": [
+      {
+        "source": "x_order",
+        "vhost": "/",
+        "destination": "q_order",
+        "destination_type": "queue",
+        "routing_key": "order"
+      },
+      {
+        "source": "x_inventory",
+        "vhost": "/",
+        "destination": "q_inventory",
+        "destination_type": "queue",
+        "routing_key": "inventory.*"
+      },
+      {
+        "source": "x_catalog",
+        "vhost": "/",
+        "destination": "q_catalog",
+        "destination_type": "queue",
+        "routing_key": ""
+      }
+    ]
+  }
+  
