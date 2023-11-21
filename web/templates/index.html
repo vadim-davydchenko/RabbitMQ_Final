@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Интернет-Магазин</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.order-button').click(function() {
+                var itemId = $(this).data('item-id');
+                var quantity = $('#quantity_' + itemId).val();
+
+                $.post('/submit_order', { item_id: itemId, quantity: quantity }, function(data) {
+                    alert(data);
+                });
+            });
+
+            $('#update-inventory-button').click(function() {
+                var itemId = $('#inventory-item-id').val();
+                var quantity = $('#inventory-quantity').val();
+
+                $.post('/update_inventory', { item_id: itemId, quantity: quantity }, function(data) {
+                    alert(data);
+                });
+            });
+
+            $('#update-catalog-button').click(function() {
+                var itemId = $('#catalog-item-id').val();
+                var name = $('#catalog-name').val();
+                var description = $('#catalog-description').val();
+
+                $.post('/update_catalog', { item_id: itemId, name: name, description: description }, function(data) {
+                    alert(data);
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Добро пожаловать в наш интернет-магазин!</h1>
+    <div id="catalog">
+        <!-- Пример товаров -->
+        <div class="item">
+            <span>Товар 1</span>
+            <input type="number" id="quantity_1" value="1">
+            <button class="order-button" data-item-id="1">Заказать</button>
+        </div>
+        <div class="item">
+            <span>Товар 2</span>
+            <input type="number" id="quantity_2" value="1">
+            <button class="order-button" data-item-id="2">Заказать</button>
+        </div>
+    </div>
+
+    <h2>Обновить инвентарь</h2>
+    <input type="text" id="inventory-item-id" placeholder="ID товара">
+    <input type="number" id="inventory-quantity" placeholder="Количество">
+    <button id="update-inventory-button">Обновить инвентарь</button>
+
+    <h2>Обновить каталог</h2>
+    <input type="text" id="catalog-item-id" placeholder="ID товара">
+    <input type="text" id="catalog-name" placeholder="Название">
+    <input type="text" id="catalog-description" placeholder="Описание">
+    <button id="update-catalog-button">Обновить каталог</button>
+</body>
+</html>
