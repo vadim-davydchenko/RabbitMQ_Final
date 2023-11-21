@@ -19,7 +19,7 @@ def connect_to_rabbitmq():
         try:
             return pika.BlockingConnection(parameters)
         except pika.exceptions.AMQPConnectionError as e:
-            logger.error("He удалось подключиться к RabbitMQ, ожидание... Причина: %s", e)
+            logger.error("Failed to connect to RabbitMQ, pending... Reason: %s", e)
             time.sleep(10)
 
 # Create a connection and channel in the global scope
@@ -41,11 +41,11 @@ def submit_order():
         channel.exchange_declare(exchange='x_order', exchange_type='direct', durable=True)
         channel.basic_publish(exchange='x_order', routing_key='order', body=json.dumps(order))
 
-        logger.info("Заказ успешно отправлен в RabbitMQ: %s", order)
+        logger.info("The order has been successfully shipped to RabbitMQ: %s", order)
         return 'Заказ успешно размещен!'
     except Exception as e:
-        logger.error("Ошибка при отправке заказа: %s", e)
-        return 'Ошибка при размещении заказа', 500
+        logger.error("Order successfully placed: %s", e)
+        return 'Error when placing an order', 500
 
 @app.route('/update_inventory', methods=['POST'])
 def update_inventory():
@@ -56,11 +56,11 @@ def update_inventory():
     # Logic for sending a message to the q_inventory queue
     try:
         channel.basic_publish(exchange='x_inventory', routing_key='inventory.update', body=json.dumps(update))
-        logger.info("Сообщение ob обновлении инвентаря отправлено в RabbitMQ: %s", update)
-        return 'Инвентарь успешно обновлен!'
+        logger.info("An inventory update message has been sent to RabbitMQ: %s", update)
+        return 'The inventory has been successfully updated!'
     except Exception as e:
-        logger.error("Ошибка при отправке сообщения ob инвентаре: %s", e)
-        return 'Ошибка при обновлении инвентаря', 500
+        logger.error("Error when sending  an inventory message: %s", e)
+        return 'Error when updating inventory', 500
 
 @app.route('/update_catalog', methods=['POST'])
 def update_catalog():
@@ -72,11 +72,11 @@ def update_catalog():
     # Logic for sending a message to the q_catalog queue
     try:
         channel.basic_publish(exchange='x_catalog', routing_key='', body=json.dumps(update))
-        logger.info("Сообщение ob обновлении каталога отправлено в RabbitMQ: %s", update)
-        return 'Каталог успешно обновлен!'
+        logger.info("The message about updating the catalog has been sent to RabbitMQ: %s", update)
+        return 'The catalog has been successfully updated!'
     except Exception as e:
-        logger.error("Ошибка при отправке сообщения ob каталоге: %s", e)
-        return 'Ошибка при обновлении каталога', 500
+        logger.error("Error when sending a message an catalog: %s", e)
+        return 'Error during catalog update', 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)
