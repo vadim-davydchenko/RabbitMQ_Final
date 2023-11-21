@@ -8,19 +8,19 @@ logger = logging.getLogger(__name__)
 
 def process_order(ch, method, properties, body):
     order = json.loads(body)
-    logger.info("Обработка заказа: %s", order)
+    logger.info("Order processing: %s", order)
     time.sleep(5)
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
 def process_inventory_update(ch, method, properties, body):
     update = json.loads(body)
-    logger.info("Обновление инвентаря: %s", update)
+    logger.info("Inventory update: %s", update)
     time.sleep(5)
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
 def process_catalog_update(ch, method, properties, body):
     update = json.loads(body)
-    logger.info("Обновление каталога: %s", update)
+    logger.info("Catalog Update: %s", update)
     time.sleep(5)
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
@@ -33,10 +33,10 @@ while not connected:
         connection = pika.BlockingConnection(parameters)
         connected = True
     except pika.exceptions.AMQPConnectionError as e:
-        logger.error("He удалось подключиться к RabbitMQ, ожидание... Причина: %s", e)
+        logger.error("Failed to connect to RabbitMQ, pending... Reason: %s", e)
         time.sleep(10)
 
-# Подписка на очереди
+# Subscription to the queue
 channel = connection.channel()
 
 channel.queue_declare(queue='q_order', durable=True)
@@ -47,5 +47,5 @@ channel.basic_consume(queue='q_order', on_message_callback=process_order, auto_a
 channel.basic_consume(queue='q_inventory', on_message_callback=process_inventory_update, auto_ack=False)
 channel.basic_consume(queue='q_catalog', on_message_callback=process_catalog_update, auto_ack=False)
 
-logger.info('Рабочий процесс запущен. Ожидание сообщений...')
+logger.info('Workflow is running. Waiting for messages...')
 channel.start_consuming()
